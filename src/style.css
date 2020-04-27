@@ -1,0 +1,76 @@
+.sld {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 20px;
+  padding-left: 18px;
+  padding-right: 18px;
+}
+.sld .line {
+  height: 4px;
+  width: 100%;
+  display: flex;
+}
+.sld .line .circle-o {
+  position: relative;
+}
+.sld .line .circle-o .circle-i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  position: absolute;
+  left: 0;
+  transform: translate(-50%, -25%);
+}
+.sld .line .circle-o .circle-big {
+  width: 36px;
+  height: 36px;
+  position: absolute;
+  left: 0;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 600;
+  transform: translate(-50%, -50%);
+}
+.sld .line .circle-o .circle-big > span {
+  padding-top: 2px;
+}
+.sld .number {
+  width: 100%;
+  height: 40px;
+  margin: 5px 0;
+  display: flex;
+  align-items: center;
+}
+.sld .number .number-o {
+  position: relative;
+  font-size: 14px;
+}
+.sld .number .number-o .number-i {
+  position: absolute;
+  left: 0;
+  transform: translateX(-50%);
+}
+.sld .words {
+  display: flex;
+  justify-content: space-between;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 25px;
+  width: 100%;
+  margin-top: 20px;
+}
+.sld .words .left {
+  opacity: 0.5;
+  color: #cecece;
+}
+.sld .words .right {
+  color: #000000;
+}
