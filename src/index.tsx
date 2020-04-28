@@ -1,5 +1,5 @@
 import * as React from 'react'
-import './style.css'
+import './index.less'
 interface ComponentProp {
   disabled?: boolean;
   min: number;
