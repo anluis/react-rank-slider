@@ -22,7 +22,12 @@ export default {
     }
   ],
   plugins: [
-    external(),
+    postcss({
+      extract: true,
+      extensions: ['.less', '.css'],
+      inject: true
+    }),
+    external['react', '@rooks/use-boundingclientrect', 'react-dom'],
     resolve(),
     typescript({
       rollupCommonJSResolveHack: true,
@@ -32,12 +37,8 @@ export default {
     commonjs({
       include: ["node_modules/**"],
       namedExports: {
-        'node_modules/react/index.js': ['useRef', 'useCallback', 'useState', 'createElement', 'Fragment']
+        'node_modules/react/index.js': ['useRef', 'useCallback', 'useState', 'createElement', 'Fragment', 'useEffect']
       }
-    }),
-    postcss({
-      extract: true,
-      extensions: ['.less']
     })
   ]
 }

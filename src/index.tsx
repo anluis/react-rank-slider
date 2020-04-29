@@ -1,5 +1,7 @@
 import * as React from 'react'
 import './index.less'
+import useBoundingclientrect from '@rooks/use-boundingclientrect'
+
 interface ComponentProp {
   disabled?: boolean;
   min: number;
@@ -9,29 +11,30 @@ interface ComponentProp {
   minText?: string;
   maxText?: string;
   defaultColor?: string;
-  color?: string
+  color?: string;
+  getValue: React.Dispatch<React.SetStateAction<number>>
+  
 }
 
-function useHookWithRefCallback():any {
-  const ref = React.useRef(null)
-  const setRef = React.useCallback(node => {
-    if (ref.current) {
-      // Make sure to cleanup any events/references added to the last instance
-    }
-    if (node) {
-      // Check if a node is actually passed. Otherwise node would be null.
-      // You can now do what you need to, addEventListeners, measure, etc.
-    }
-    // Save a reference to the node
-    ref.current = node
-  }, [])
-  return [setRef]
+function preventDefault(event: React.TouchEvent, isStopPropagation?: boolean) {
+  if (typeof event.cancelable !== 'boolean' || event.cancelable) {
+    event.preventDefault()
+  }
+
+  if (isStopPropagation) {
+    stopPropagation(event)
+  }
+}
+
+function stopPropagation(event: React.TouchEvent) {
+  event.stopPropagation()
 }
 
 export function RankSlider(props: ComponentProp) {
 
-  const [ref] = useHookWithRefCallback()
-  const { propValue, max, min, disabled, step, minText, maxText, color, defaultColor } = props
+  const sldRef = React.useRef(null)
+  const getBoundingClientRect = useBoundingclientrect(sldRef)
+  const { propValue, max, min, disabled, step, minText, maxText, color, defaultColor, getValue } = props
   const [ startX, setStartX ] = React.useState(0)
   const [ startValue, setStartValue ] = React.useState(1)
   const [ value, setValue ] = React.useState(propValue ? propValue : 1)
@@ -45,51 +48,52 @@ export function RankSlider(props: ComponentProp) {
       return
     }
     setStartX(event.touches[0].clientX)
+    setStartValue(format(value))
   }
 
   function handleTouchMove(event: React.TouchEvent) {
     if (disabled) {
       return
     }
-    const rect = ref.getBoundingClientRect()
+    preventDefault(event, true);
+    const rect = getBoundingClientRect
     const touch = event.touches[0]
     const deltaX = touch.clientX - startX
-    const total = rect.width
+    const total = rect!.width
     const diff = (deltaX / total) * (max - min)
     setValue(format(startValue + diff))
+    getValue(value)
   }
-
-  // function handleTouchEnd(event: React.TouchEvent) {
-  //   if (disabled) {
-  //     return
-  //   }
-  //   // 此处要实现双向绑定
-  // }
 
   function handleClick(event: React.MouseEvent) {
     event.stopPropagation()
     if (disabled) {
       return
     }
-    const rect = ref.getBoundingClientRect()
-    const delta = event.clientX - rect.left
-    const total = rect.width
+    const rect = getBoundingClientRect
+    const delta = event.clientX - rect!.left
+    const total = rect!.width
     const newValue = (delta / total) * (max - min) + min
     setStartValue(value)
     setValue(format(newValue))
+    getValue(value)
   }
 
   const renderNumbers = []
   const renderLine = []
-  for (let index = 0; index <=max; index ++) {
+
+  for (let index = 0; index <= max -1; index ++) {
     const divStyle1 = {
       backgroundColor: index !== max ? '' : color,
       flex: index !== max - 1 ? 1 : 0
     }
+    const spanStyle = {
+      opacity: index / max + 0.1
+    }
 
-    renderNumbers.push(( <div style={divStyle1}>
-      <div className="number-i">
-        { index % 2 === 0 && <span>{index + 1}</span> }
+    renderNumbers.push(( <div style={divStyle1} key={`number-${index}`}>
+      <div className="number-i" key={index}>
+        { index % 2 === 0 && <span style={spanStyle}>{index + 1}</span> }
       </div>
     </div>))
 
@@ -104,7 +108,8 @@ export function RankSlider(props: ComponentProp) {
     const divStyleInner2 = {
       backgroundColor: color
     }
-    renderLine.push(<div className="circle-o" style={divStyle}>
+
+    renderLine.push(<div className="circle-o" style={divStyle} key={index}>
       <div className={divClassName} style={divStyleInner} />
       {
         (value > index * step && value <= (index + 1) * step) &&
@@ -114,16 +119,12 @@ export function RankSlider(props: ComponentProp) {
     </div>)
   }
 
-
-    
-
   return (
     <div
-      ref={ref}
-      onTouchStart={(event: React.TouchEvent) => handleTouchStart(event)}
-      onTouchMove={(event: React.TouchEvent) => handleTouchMove(event)}
-      // onTouchEnd={(event: React.TouchEvent) => handleTouchEnd(event)}
-      onClick={(event: React.MouseEvent) => handleClick(event)}
+      ref={sldRef}
+      onClickCapture={(event: React.MouseEvent) => handleClick(event)}
+      onTouchStartCapture={(event: React.TouchEvent) => handleTouchStart(event)}
+      onTouchMoveCapture={(event: React.TouchEvent) => handleTouchMove(event)}
       className="sld">
       <div className="line">
         {renderLine}
@@ -139,4 +140,5 @@ export function RankSlider(props: ComponentProp) {
     </div>
   )
 }
-   
+
+export default RankSlider;
