@@ -4,7 +4,7 @@ import external from "rollup-plugin-peer-deps-external"
 import resolve from "@rollup/plugin-node-resolve"
 import pkg from './package.json'
 import postcss from 'rollup-plugin-postcss';
-
+import  { terser } from 'rollup-plugin-terser'
 export default {
   input: "src/index.tsx",
   output: [
@@ -39,6 +39,7 @@ export default {
       namedExports: {
         'node_modules/react/index.js': ['useRef', 'useCallback', 'useState', 'createElement', 'Fragment', 'useEffect']
       }
-    })
+    }),
+    terser()
   ]
 }
