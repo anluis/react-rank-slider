@@ -1,17 +1,27 @@
 import * as React from 'react'
 import './index.less'
-import useBoundingclientrect from '@rooks/use-boundingclientrect'
+import useBoundingclientrect from './hooks/useBoundingclientrect'
 
 interface ComponentProp {
+  /** 是否禁用 */
   disabled?: boolean;
+  /** 最小值 */
   min: number;
+  /** 最大值 */
   max: number;
+  /** 步长 */
   step: number;
+  /** 初始值 */
   propValue?: number;
+  /** 最小值的解释文字 */
   minText?: string;
+  /** 最大值的解释文字 */
   maxText?: string;
+  /** 背景颜色 */
   defaultColor?: string;
+  /** 拖拽圆点颜色 */
   color?: string;
+  /** 返回值回调函数,用于父组件获取 */
   getValue: React.Dispatch<React.SetStateAction<number>>
   
 }
@@ -30,7 +40,7 @@ function stopPropagation(event: React.TouchEvent) {
   event.stopPropagation()
 }
 
-export function RankSlider(props: ComponentProp) {
+export function RankSlider(props: ComponentProp): React.ReactElement {
 
   const sldRef = React.useRef(null)
   const getBoundingClientRect = useBoundingclientrect(sldRef)
